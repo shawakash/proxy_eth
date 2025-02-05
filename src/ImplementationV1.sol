@@ -3,9 +3,9 @@ pragma solidity ^0.8.13;
 
 contract ImplementationV1 {
     address private owner;
-    uint public num;
+    uint256 public num;
 
-    function setNum(uint _num) public {
+    function setNum(uint256 _num) public {
         num = _num;
     }
 }

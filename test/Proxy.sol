@@ -20,9 +20,7 @@ contract ProxyTest is Test {
     }
 
     function testSetNum() public {
-        (bool success, ) = address(proxy).call(
-            abi.encodeWithSignature("setNum(uint256)", 43)
-        );
+        (bool success,) = address(proxy).call(abi.encodeWithSignature("setNum(uint256)", 43));
 
         if (!success) {
             revert();
@@ -32,9 +30,7 @@ contract ProxyTest is Test {
     }
 
     function testPutNumOnImplementationV1() public {
-        (bool success, ) = address(proxy).call(
-            abi.encodeWithSignature("putNum(uint256)", 43)
-        );
+        (bool success,) = address(proxy).call(abi.encodeWithSignature("putNum(uint256)", 43));
 
         assertEq(success, false);
     }
@@ -43,9 +39,7 @@ contract ProxyTest is Test {
         address newImplementation = address(new ImplementationV2());
         proxy.setImplementation(newImplementation);
 
-        (bool success, ) = address(proxy).call(
-            abi.encodeWithSignature("putNum(uint256)", 21)
-        );
+        (bool success,) = address(proxy).call(abi.encodeWithSignature("putNum(uint256)", 21));
 
         if (!success) {
             revert();
