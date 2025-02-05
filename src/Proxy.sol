@@ -13,22 +13,17 @@ contract Proxy is Ownable {
         implementation = _implementation;
     }
 
-    function setNum(uint _num) public {
-        (bool success, ) = implementation.delegatecall(
-            abi.encodeWithSignature("setNum(uint256)", _num)
-        );
-
-        if (!success) {
-            revert();
-        }
-    }
-
     function setImplementation(address _impl) public onlyOwner {
         implementation = _impl;
         emit SetImplementationCall();
     }
 
     fallback() external {
+        (bool success, ) = implementation.delegatecall(msg.data);
+
+        if (!success) {
+            revert();
+        }
         emit FallbackCall();
     }
 }
