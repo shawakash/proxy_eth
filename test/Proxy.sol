@@ -4,6 +4,7 @@ pragma solidity ^0.8.13;
 import {Test, console} from "forge-std/Test.sol";
 import {Proxy} from "../src/Proxy.sol";
 import {ImplementationV1} from "../src/ImplementationV1.sol";
+import {ImplementationV2} from "../src/ImplementationV2.sol";
 
 contract ProxyTest is Test {
     Proxy public proxy;
@@ -12,22 +13,44 @@ contract ProxyTest is Test {
         address implementation = address(new ImplementationV1());
 
         proxy = new Proxy(implementation);
-        proxy.setNum(42);
     }
 
     function testProxy() public {
-        assertEq(proxy.num(), 42);
+        assertEq(proxy.num(), 0);
     }
 
     function testSetNum() public {
-        proxy.setNum(43);
+        (bool success, ) = address(proxy).call(
+            abi.encodeWithSignature("setNum(uint256)", 43)
+        );
+
+        if (!success) {
+            revert();
+        }
+
         assertEq(proxy.num(), 43);
     }
 
-    function testSetImplementation() public {
-        address newImplementation = address(new ImplementationV1());
+    function testPutNumOnImplementationV1() public {
+        (bool success, ) = address(proxy).call(
+            abi.encodeWithSignature("putNum(uint256)", 43)
+        );
+
+        assertEq(success, false);
+    }
+
+    function testPutNumOnImplementationV2() public {
+        address newImplementation = address(new ImplementationV2());
         proxy.setImplementation(newImplementation);
-        proxy.setNum(43);
-        assertEq(proxy.num(), 43);
+
+        (bool success, ) = address(proxy).call(
+            abi.encodeWithSignature("putNum(uint256)", 21)
+        );
+
+        if (!success) {
+            revert();
+        }
+
+        assertEq(proxy.num(), 21 * 2);
     }
 }
