@@ -11,6 +11,8 @@ env:
 jobs:
   check:
     strategy:
+      matrix:
+        os: [ubuntu-latest]
       fail-fast: true
 
     name: Foundry project
