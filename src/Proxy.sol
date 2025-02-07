@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
 
-import "../lib/openzeppelin-contracts/contracts/access/Ownable.sol";
+import "lib/openzeppelin-contracts/contracts/access/Ownable.sol";
 
 contract Proxy is Ownable {
     uint256 public num;
@@ -20,7 +20,7 @@ contract Proxy is Ownable {
     }
 
     fallback() external {
-        (bool success,) = implementation.delegatecall(msg.data);
+        (bool success, ) = implementation.delegatecall(msg.data);
 
         if (!success) {
             revert();
