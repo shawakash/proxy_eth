@@ -1,66 +1,107 @@
-## Foundry
+# Staking Proxy Contract
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+A upgradeable staking contract system that allows users to stake ERC20 tokens and earn rewards with a 10% APR. The system uses a proxy pattern to enable upgrades while maintaining state.
 
-Foundry consists of:
+## Features
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+- 🔒 Secure staking of ERC20 tokens
+- 💰 10% APR rewards
+- ⏳ 21-day unstaking period
+- 🔄 Upgradeable contract logic via proxy pattern
+- ⚡ Gas-efficient implementation
+- 🛡️ Reentrancy protection
 
-## Documentation
+## Contract Architecture
 
-https://book.getfoundry.sh/
+The system consists of two main contracts:
+
+1. `StakingProxy.sol`: The proxy contract that delegates calls and maintains state
+2. `Staking.sol`: The implementation contract containing the staking logic
+
+## Technical Specifications
+
+- Solidity version: ^0.8.13
+- Framework: Foundry
+- Testing: Forge
+- Dependencies: OpenZeppelin Contracts
+
+## Core Functions
+
+### Staking Functions
+
+```solidity
+function stake(address _token, uint _amount) external
+function startUnstake(address _token, uint _amount) external
+function finalizeUnstake(address token) external
+function calculateRewards(address _user, address _token) public view returns (uint256)
+```
+
+### Proxy Functions
+
+```solidity
+function setImplementation(address _impl) public onlyOwner {}
+function getImplementation() public view returns (address) {}
+```
+
+## Installation
+
+1. Clone the repository:
+```bash
+git clone https://github.com/shawakash/proxy_stake.git
+cd proxy_stake
+```
+
+2. Install dependencies:
+```bash
+forge install
+```
+
+## Testing
+
+Run the test suite:
+```bash
+forge test
+```
+
+Run tests with gas reporting:
+```bash
+forge test --gas-report
+```
 
 ## Usage
 
-### Build
-
-```shell
-$ forge build
+1. Deploy the implementation contract:
+```bash
+forge create src/Staking.sol:Staking
 ```
 
-### Test
-
-```shell
-$ forge test
+2. Deploy the proxy contract with the implementation address:
+```bash
+forge create src/StakingProxy.sol:StakingProxy --constructor-args <IMPLEMENTATION_ADDRESS>
 ```
 
-### Format
+3. Interact with the proxy contract using the Staking ABI.
 
-```shell
-$ forge fmt
-```
+## Upgrading
 
-### Gas Snapshots
+To upgrade the contract:
 
-```shell
-$ forge snapshot
-```
+1. Deploy new implementation
+2. Call `setImplementation()` on proxy with new implementation address
+3. Verify implementation address with `getImplementation()`
 
-### Anvil
+## Security Considerations
 
-```shell
-$ anvil
-```
+- 21-day unstaking period to prevent rapid withdrawals
+- Reentrancy guards on critical functions
+- Proxy pattern for upgradeable logic
+- Owner-only implementation updates
+- Comprehensive test coverage
 
-### Deploy
+## Contributing
 
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+1. Fork the repository
+2. Create your feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a new Pull Request
